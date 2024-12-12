@@ -1,0 +1,9 @@
+ALTER TABLE shelter
+DROP COLUMN city;
+
+DROP TABLE IF EXISTS cities;
+
+ALTER TABLE refugee 
+ALTER COLUMN type TYPE TEXT USING type::text;
+
+DROP TYPE IF EXISTS pet_type;

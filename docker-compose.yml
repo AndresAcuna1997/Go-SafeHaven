@@ -1,0 +1,15 @@
+version: '1'
+
+services:
+  myDB:
+    image: postgres
+    container_name: safe-haven
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=safehaven-db
+    volumes:
+      - ./postgres:/var/lib/postgresql/data

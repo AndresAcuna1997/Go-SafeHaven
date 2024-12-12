@@ -1,0 +1,5 @@
+ALTER TABLE shelter
+ADD COLUMN organization_id INT REFERENCES organization(id) ON DELETE CASCADE NOT NULL;
+
+ALTER TABLE refugee
+ADD COLUMN shelter_id INT REFERENCES shelter(id) ON DELETE CASCADE NOT NULL;

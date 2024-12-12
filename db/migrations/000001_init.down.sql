@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS organization;
+DROP TABLE IF EXISTS shelter;
+DROP TABLE IF EXISTS refugee;
+DROP TYPE IF EXISTS refugee_type;
+
