@@ -9,15 +9,15 @@ import (
 )
 
 type Refugee struct {
-	ID             int             `json:"id"`
-	Name           string          `json:"name"`
-	RefugeeType    string          `json:"refugeeType"`
-	Size           string          `json:"size"`
-	Age            int             `json:"age"`
-	AdditionalInfo json.RawMessage `json:"additionalInfo"`
-	Pictures       json.RawMessage `json:"pictures"`
-	CreatedAt      time.Time       `json:"createdAt"`
-	ShelterId      int             `json:"shelterId"`
+	ID             int64
+	Name           string          `binding:"required"`
+	RefugeeType    string          `json:"refugee_type" binding:"required"`
+	Size           string          `binding:"required"`
+	Age            int64           `binding:"required"`
+	AdditionalInfo json.RawMessage `json:"additional_info" binding:"required"`
+	Pictures       json.RawMessage `binding:"required"`
+	CreatedAt      time.Time
+	ShelterId      int64 `json:"shelter_id" binding:"required"`
 }
 
 func (r Refugee) Save() (Refugee, error) {

@@ -8,23 +8,23 @@ import (
 )
 
 type Shelter struct {
-	ID             int       `json:"id"`
-	Name           string    `json:"name"`
-	Description    string    `json:"description"`
-	Address        string    `json:"address"`
-	RefugeeCount   int       `json:"refugee_count"`
-	ContactPhone   string    `json:"contact_phone"`
-	ContactEmail   string    `json:"contact_email"`
-	CreatedAt      time.Time `json:"created_at"`
-	OrganizationId int       `json:"organization_id"`
-	City           int       `json:"city"`
+	ID             int64
+	Name           string `binding:"required"`
+	Description    string `binding:"required"`
+	Address        string `binding:"required"`
+	RefugeeCount   int    `json:"refugee_count" binding:"required"`
+	ContactPhone   string `json:"contact_phone" binding:"required"`
+	ContactEmail   string `json:"contact_email" binding:"required"`
+	CreatedAt      time.Time
+	OrganizationId int64 `json:"organization_id"`
+	City           int64 `binding:"required"`
 }
 
 func (s Shelter) Save() (Shelter, error) {
-	query := `INSERT INTO shelter (name, description, address, refugeescount, contactphone, contactemail, organization_id)
-						VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, createdAt`
+	query := `INSERT INTO shelter (name, description, address, refugeescount, contactphone, contactemail, organization_id, city)
+						VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, createdAt`
 
-	row := db.DB.QueryRow(context.Background(), query, s.Name, s.Description, s.Address, s.RefugeeCount, s.ContactPhone, s.ContactEmail, s.OrganizationId)
+	row := db.DB.QueryRow(context.Background(), query, s.Name, s.Description, s.Address, s.RefugeeCount, s.ContactPhone, s.ContactEmail, s.OrganizationId, s.City)
 	err := row.Scan(&s.ID, &s.CreatedAt)
 
 	if err != nil {

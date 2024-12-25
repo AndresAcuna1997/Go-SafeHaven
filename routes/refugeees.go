@@ -21,3 +21,31 @@ func GetAllRefugees(c *gin.Context) {
 		"data": refugees,
 	})
 }
+
+func CreateRefugee(c *gin.Context) {
+	var newRefugee models.Refugee
+
+	err := c.ShouldBindJSON(&newRefugee)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error parseando la informacio ",
+		})
+		return
+	}
+
+	refugee, err := newRefugee.Save()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error creando al animalito",
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": refugee,
+	})
+
+}

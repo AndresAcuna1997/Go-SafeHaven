@@ -12,6 +12,8 @@ func seed(c *gin.Context) {
 	orgTest := models.Organization{
 		Name:        "Test Org",
 		Description: "Test description",
+		Email:       "test@test.com",
+		Password:    "1234",
 	}
 
 	org, err := orgTest.Save()
