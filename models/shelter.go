@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"safehaven.com/m/db"
@@ -34,6 +36,56 @@ func (s Shelter) Save() (Shelter, error) {
 	return s, nil
 }
 
+func (s Shelter) Update() (Shelter, error) {
+	query := `UPDATE shelter
+						SET name = $1, 
+						description = $2,
+						address =$3,
+						refugeescount=$4, 
+						contactphone=$5, 
+						contactemail=$6, 
+						city=$7
+						WHERE id = $8`
+
+	commandTag, err := db.DB.Exec(context.Background(), query,
+		s.Name,
+		s.Description,
+		s.Address,
+		s.RefugeeCount,
+		s.ContactPhone,
+		s.ContactEmail,
+		s.City,
+		s.ID)
+
+	if err != nil {
+		return Shelter{}, err
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return Shelter{}, errors.New("no filas fueron afectadas")
+	}
+
+	return s, nil
+}
+
+func (s Shelter) Delete() error {
+	query := `DELETE FROM shelter WHERE id = $1`
+
+	cmdTag, err := db.DB.Exec(context.Background(), query, s.ID)
+
+	if err != nil {
+		fmt.Println("1", err)
+		return errors.New("no se pudo borrar el refugio")
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		fmt.Println("1", err)
+		return errors.New("no filas fueron afectadas")
+	}
+
+	return nil
+}
+
 func GetAllShelters() ([]Shelter, error) {
 	query := `SELECT * FROM shelter`
 
@@ -61,5 +113,22 @@ func GetAllShelters() ([]Shelter, error) {
 	}
 
 	return shelters, nil
+}
 
+func GetSingleShelter(shelterId int64) (Shelter, error) {
+
+	var shelter Shelter
+
+	query := `SELECT * FROM shelter WHERE id = $1`
+
+	row := db.DB.QueryRow(context.Background(), query, shelterId)
+
+	err := row.Scan(&shelter.ID, &shelter.Name, &shelter.Description, &shelter.Address, &shelter.RefugeeCount, &shelter.ContactPhone, &shelter.ContactEmail, &shelter.CreatedAt, &shelter.OrganizationId, &shelter.City)
+
+	if err != nil {
+		fmt.Println(err)
+		return Shelter{}, err
+	}
+
+	return shelter, nil
 }

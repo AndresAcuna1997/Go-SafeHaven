@@ -88,3 +88,36 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"token": jwtToken})
 }
+
+// func UpdateOrg(c *gin.Context) {
+// 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Error parseando el string a int",
+// 		})
+// 		return
+// 	}
+
+// 	org, err := models.GetSingleOrg(id)
+
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Error obteniado la organization",
+// 		})
+// 		return
+// 	}
+
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Error obteniado la organization",
+// 			"error":   err,
+// 		})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"data": org,
+// 	})
+
+// }

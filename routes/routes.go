@@ -17,6 +17,14 @@ func RegisterRoutes(server *gin.Engine) {
 
 	server.POST("/login", Login)
 	server.POST("/signup", CreateOrganization)
+
 	authenticated.POST("/shelter", CreateShelter)
 	authenticated.POST("/refugee", CreateRefugee)
+	// authenticated.PUT("/organization/:id", UpdateOrg)
+	authenticated.PUT("/shelter/:id", UpdateShelter)
+	authenticated.PUT("/refugee/:id", UpdateRefugee)
+
+	// authenticated.DELETE("/organization/:id", CreateRefugee)
+	authenticated.DELETE("/shelter/:id", DeleteShelter)
+	authenticated.DELETE("/refugee/:id", DeleteRefugee)
 }

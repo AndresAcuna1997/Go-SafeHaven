@@ -40,6 +40,26 @@ func (o Organization) Save() (Organization, error) {
 	return o, nil
 }
 
+func (o *Organization) ValidateCredential() error {
+	query := `SELECT id, password FROM organization WHERE email = $1`
+
+	row := db.DB.QueryRow(context.Background(), query, o.Email)
+
+	var dbPassword string
+
+	err := row.Scan(&o.ID, &dbPassword)
+
+	if err != nil {
+		return errors.New("no existe una cuenta con ese email")
+	}
+
+	if !utils.CheckPassword(o.Password, dbPassword) {
+		return errors.New("credenciales invalidas")
+	}
+
+	return nil
+}
+
 func GetOrgs() ([]Organization, error) {
 	query := `SELECT id, name, description, email, createdAt FROM organization`
 
@@ -72,22 +92,19 @@ func GetOrgs() ([]Organization, error) {
 	return orgs, nil
 }
 
-func (o *Organization) ValidateCredential() error {
-	query := `SELECT id, password FROM organization WHERE email = $1`
+func GetSingleOrg(orgId int64) (Organization, error) {
 
-	row := db.DB.QueryRow(context.Background(), query, o.Email)
+	var org Organization
 
-	var dbPassword string
+	query := `SELECT id, name, description, email, createdAt from organization WHERE id = $1`
 
-	err := row.Scan(&o.ID, &dbPassword)
+	row := db.DB.QueryRow(context.Background(), query, orgId)
+
+	err := row.Scan(&org.ID, &org.Name, &org.Description, &org.Email, &org.CreatedAt)
 
 	if err != nil {
-		return errors.New("no existe una cuenta con ese email")
+		return Organization{}, err
 	}
 
-	if !utils.CheckPassword(o.Password, dbPassword) {
-		return errors.New("credenciales invalidas")
-	}
-
-	return nil
+	return org, nil
 }

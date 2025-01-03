@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"time"
 
 	"safehaven.com/m/db"
@@ -17,7 +19,7 @@ type Refugee struct {
 	AdditionalInfo json.RawMessage `json:"additional_info" binding:"required"`
 	Pictures       json.RawMessage `binding:"required"`
 	CreatedAt      time.Time
-	ShelterId      int64 `json:"shelter_id" binding:"required"`
+	ShelterId      int64 `json:"shelter_id"`
 }
 
 func (r Refugee) Save() (Refugee, error) {
@@ -32,6 +34,40 @@ func (r Refugee) Save() (Refugee, error) {
 	}
 
 	return r, nil
+}
+
+func (r Refugee) Update() (Refugee, error) {
+	query := `UPDATE refugee SET name = $1,
+					type = $2, size = $3, age = $4,
+					additionalinfo =$5, pictures =$6 	WHERE id = $7`
+
+	cmndTag, err := db.DB.Exec(context.Background(), query, r.Name, r.RefugeeType, r.Size, r.Age, r.AdditionalInfo, r.Pictures, r.ID)
+
+	if err != nil {
+		return Refugee{}, errors.New("no se pudo actualizar el animalito")
+	}
+
+	if cmndTag.RowsAffected() == 0 {
+		return Refugee{}, errors.New("no se afecto ninguna fila")
+	}
+
+	return r, nil
+}
+
+func (r Refugee) Delete() error {
+	query := `DELETE FROM refugee WHERE id = $1`
+
+	cmdTag, err := db.DB.Exec(context.Background(), query, r.ID)
+
+	if err != nil {
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return errors.New("no se afecto ninguna fila")
+	}
+
+	return nil
 }
 
 func GetAllRefugees() ([]Refugee, error) {
@@ -61,4 +97,22 @@ func GetAllRefugees() ([]Refugee, error) {
 		return []Refugee{}, err
 	}
 	return refugees, nil
+}
+
+func FindSingleRefugee(id int64) (Refugee, error) {
+	//Crear Struct
+	var refugee Refugee
+	//Crear Query
+	query := `SELECT * from refugee WHERE id = $1`
+
+	row := db.DB.QueryRow(context.Background(), query, id)
+
+	err := row.Scan(&refugee.ID, &refugee.Name, &refugee.RefugeeType, &refugee.Size, &refugee.Age, &refugee.AdditionalInfo, &refugee.Pictures, &refugee.CreatedAt, &refugee.ShelterId)
+
+	if err != nil {
+		fmt.Println(err)
+		return Refugee{}, errors.New("error obteniendo el animalito")
+	}
+
+	return refugee, nil
 }
